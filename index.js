@@ -50,6 +50,7 @@ function asyncToGen(source, options) {
 
 
   visit(ast, editor, asyncToGenVisitor);
+  visit(ast, editor, decoratorsVisitor);
 
   editor.isEdited = Boolean(
     ast.containsAsync ||
@@ -240,6 +241,67 @@ var asyncToGenVisitor = {
   },
   ForAwaitStatement: {
     leave: leaveForAwait
+  }
+};
+
+var decoratorsVisitor = {
+  ClassDeclaration: {
+    enter: function (editor, classNode, ast) {
+      let decorators = classNode.decorators || []
+      let template = ``
+      let className = classNode.id.name
+
+      editor.prependLeft(classNode.start, `var ${className} = (function () {`)
+      
+      // compute decorators code
+      let decoratorsCode = ``
+      decorators.forEach(decoratorNode => {
+        let decoratorName,
+            decoratorParams
+
+        if(decoratorNode.expression.type === 'CallExpression') {
+          decoratorName = decoratorNode.expression.callee.name
+          decoratorParams = decoratorNode.expression.arguments
+
+          //console.log('decoratorParams: ', decoratorParams)
+          let paramsCode = []
+          decoratorParams.forEach(paramNode => {
+            switch(paramNode.type) {
+              case 'StringLiteral': 
+                paramsCode.push(paramNode.extra.raw)
+              break;
+              case 'NumericLiteral': 
+                paramsCode.push(paramNode.value)
+              break;
+              case 'BooleanLiteral': 
+                paramsCode.push(paramNode.value)
+              break;
+              case 'NullLiteral': 
+                paramsCode.push('null')
+              break;
+              case 'Identifier': 
+                paramsCode.push(paramNode.name)
+              break;
+              default:
+                throw new Error(`${paramNode.type} in decorator "${decoratorName}" not supported.`)
+            }
+          })
+
+          decoratorsCode += `${className} = ${decoratorName}(${paramsCode})(${className}) || ${className}; \n`
+        } else {
+          decoratorName = decoratorNode.expression.name
+          decoratorsCode += `${className} = ${decoratorName}(${className}) || ${className}; \n`
+        }
+
+        editor.overwrite(decoratorNode.start, decoratorNode.end, '')
+      })
+
+      editor.prependRight(classNode.end, `
+
+        ${decoratorsCode}
+        return ${className};
+      })();`)
+    }
   }
 };
 
