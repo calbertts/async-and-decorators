@@ -1,3 +1,5 @@
 .DS_Store
 npm-debug.log
 node_modules
+async-and-generators.sublime-project
+async-and-generators.sublime-workspace
