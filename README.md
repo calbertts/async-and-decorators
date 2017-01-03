@@ -1,5 +1,8 @@
-async-to-gen
+async-and-decorators
 ============
+
+NOTE ABOUT THIS FORK:
+This package works exaclty the same to the original one, I just made some additions to it in order to support Javascript Decorators.
 
 [![npm](https://img.shields.io/npm/v/async-to-gen.svg?maxAge=86400)](https://www.npmjs.com/package/async-to-gen)
 [![Build Status](https://img.shields.io/travis/leebyron/async-to-gen.svg?style=flat&label=travis&branch=master)](https://travis-ci.org/leebyron/async-to-gen)
