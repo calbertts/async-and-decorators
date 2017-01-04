@@ -32,7 +32,7 @@ function asyncToGen(source, options) {
   editor.containsForAwaitOf = false;
 
   // Cheap trick for files that don't actually contain async functions
-  if (fastSkip && source.indexOf('async') === -1 || source.indexOf('@')) {
+  if (fastSkip && source.indexOf('async') === -1 && source.indexOf('@') === -1) {
     return editor;
   }
 
