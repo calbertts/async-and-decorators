@@ -43,7 +43,7 @@ function asyncToGen(source, options) {
     allowReturnOutsideFunction: true,
     allowSuperOutsideMethod: true,
     sourceType: 'module',
-    plugins: [ '*', 'jsx', 'flow' ],
+    plugins: [ '*', 'jsx', 'flow', 'decorators' ],
   });
 
   ast.shouldIncludeHelper = includeHelper;
